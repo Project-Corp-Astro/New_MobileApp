@@ -7,8 +7,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import LoginScreen from '../screens/LoginScreen';
-import SampleScreen from '../screens/SampleScreen';
 import TabLayout from '../tabs/_layout';
 
 import ProfileScreen from '../screens/Menu/ProfileScreen';
@@ -19,6 +17,7 @@ import ReferUsScreen from '../screens/Menu/ReferUsScreen';
 import CalendarScreen from '../screens/Menu/CalendarScreen';
 import SubscriptionScreen from '../screens/Menu/subscription';
 import HelpSupportScreen from '../screens/Menu/HelpSupportScreen';
+import ChartDetailScreen from '../screens/Charts/ChartDetailScreen';
 
 
 
@@ -42,19 +41,13 @@ export default function App() {
               fontWeight: 'bold',
             },
           }}>
-          <Stack.Screen 
-            name="LoginScreen" 
-            component={LoginScreen} options={{ headerShown: false }}
-          />
+    
           <Stack.Screen
             name="TabLayout"
             component={TabLayout}
             options={{ headerShown: false }}
           />
-          <Stack.Screen 
-            name="SampleScreen" 
-            component={SampleScreen} options={{ headerShown: false }}
-          />
+
           <Stack.Screen 
             name="HelpSupportScreen" 
             component={HelpSupportScreen} options={{ headerShown: false }}
@@ -88,6 +81,10 @@ export default function App() {
             name="SubscriptionScreen" 
             component={SubscriptionScreen} options={{ headerShown: false }}
           />
+          <Stack.Screen 
+            name="ChartDetailScreen" 
+            component={ChartDetailScreen} options={{ headerShown: false }}
+          />  
 
         </Stack.Navigator>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
