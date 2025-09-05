@@ -1,1 +1,1 @@
-export { default } from '../SampleFrontend/src/navigation/index'; 
+export { default } from '../New_MobileApp/src/navigation/index'; 
