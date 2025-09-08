@@ -2,8 +2,8 @@
  * Corp Astro - Chart Detail Screen
  *
  * Dynamic chart detail page showing:
- * - North Indian square grid chart layout (traditional format)
- * - Chart data from in-house astro engine
+ * - North Indian diamond chart layout (with correct lines)
+ * - Chart data from in-house astro engine (mocked here)
  * - Readings and predictions
  * - Premium mystical design matching app theme
  *
@@ -12,29 +12,33 @@
  * @since 2025
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  Pressable,
   Dimensions,
   ActivityIndicator,
-} from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
+  ViewStyle,
+} from "react-native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 // Design System
-import { corpAstroDarkTheme } from '../../components/DesignSystem/DarkTheme';
-import { spacing, typography, radius, colors, shadows } from '../../components/DesignSystem/designTokens';
+import {
+  spacing,
+  typography,
+  radius,
+  colors,
+  shadows,
+} from "../../components/DesignSystem/designTokens";
 
 // Layout
-import CorporateProfessionalHeader from '../../components/professional/CorporateProfessionalHeader';
+import CorporateProfessionalHeader from "../../components/professional/CorporateProfessionalHeader";
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 /**
  * Stack params for navigation
@@ -54,28 +58,27 @@ type RootStackParamList = {
 
 type ChartDetailScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  'ChartDetail'
+  "ChartDetail"
 >;
 
-type ChartDetailScreenRouteProp = RouteProp<RootStackParamList, 'ChartDetail'>;
+type ChartDetailScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "ChartDetail"
+>;
 
-/**
- * Chart Detail Screen Component
- */
+type HousePosition = {
+  top?: string | number;
+  left?: string | number;
+  right?: string | number;
+  bottom?: string | number;
+  transform?: Array<{ [key: string]: number | string }>;
+};
+
 const ChartDetailScreen: React.FC = () => {
   const navigation = useNavigation<ChartDetailScreenNavigationProp>();
   const route = useRoute<ChartDetailScreenRouteProp>();
-  const theme = corpAstroDarkTheme;
 
-  const {
-    chartId,
-    chartType,
-    title: chartTitle,
-    energyType,
-    description,
-    isPremium,
-    powerLevel,
-  } = route.params;
+  const { chartId, chartType, title: chartTitle } = route.params;
 
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<any>(null);
@@ -84,11 +87,11 @@ const ChartDetailScreen: React.FC = () => {
     const loadChartData = async () => {
       try {
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1500)); // simulate API
+        await new Promise((resolve) => setTimeout(resolve, 800)); // simulate API
         const mockChartData = generateMockChartData(chartType);
         setChartData(mockChartData);
       } catch (error) {
-        console.error('Error loading chart data:', error);
+        console.error("Error loading chart data:", error);
       } finally {
         setLoading(false);
       }
@@ -98,39 +101,57 @@ const ChartDetailScreen: React.FC = () => {
 
   // --- Mock Data Generators ---
   const generateMockChartData = (type: string) => {
-    const planets = ['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa', 'Ra', 'Ke'];
+    const planets = ["Su", "Mo", "Ma", "Me", "Ju", "Ve", "Sa", "Ra", "Ke"];
     const houses = Array.from({ length: 12 }, (_, i) => ({
       number: i + 1,
-      planets: [],
+      planets: [] as string[],
       sign: getSignForHouse(i + 1),
       degrees: Math.floor(Math.random() * 30),
     }));
 
-    planets.forEach(planet => {
+    planets.forEach((planet) => {
       const randomHouse = Math.floor(Math.random() * 12);
       houses[randomHouse].planets.push(planet);
     });
 
     return {
       type,
+      ascSign: houses[0].sign, // using house 1 sign as asc mock
       houses,
-      strengths: ['Strong Jupiter in 9th house', 'Venus in own sign', 'Mars in exaltation'],
-      weaknesses: ['Afflicted Moon', 'Saturn in 6th house'],
+      strengths: [
+        "Strong Jupiter in 9th house",
+        "Venus in own sign",
+        "Mars in exaltation",
+      ],
+      weaknesses: ["Afflicted Moon", "Saturn in 6th house"],
       predictions: [
-        'Career advancement in coming months',
-        'Favorable time for relationships',
-        'Financial growth indicated',
+        "Career advancement in coming months",
+        "Favorable time for relationships",
+        "Financial growth indicated",
       ],
       remedies: [
-        'Chant Jupiter mantras on Thursdays',
-        'Wear yellow sapphire',
-        'Donate to educational institutions',
+        "Chant Jupiter mantras on Thursdays",
+        "Wear yellow sapphire",
+        "Donate to educational institutions",
       ],
     };
   };
 
   const getSignForHouse = (house: number): string => {
-    const signs = ['Ari', 'Tau', 'Gem', 'Can', 'Leo', 'Vir', 'Lib', 'Sco', 'Sag', 'Cap', 'Aqu', 'Pis'];
+    const signs = [
+      "Ari",
+      "Tau",
+      "Gem",
+      "Can",
+      "Leo",
+      "Vir",
+      "Lib",
+      "Sco",
+      "Sag",
+      "Cap",
+      "Aqu",
+      "Pis",
+    ];
     return signs[(house - 1) % 12];
   };
 
@@ -147,8 +168,24 @@ const ChartDetailScreen: React.FC = () => {
   const renderNorthIndianChart = () => {
     if (!chartData) return null;
 
-    const chartSize = screenWidth - 40;
-    const houseSize = chartSize / 4;
+    // Responsive square size
+    const chartSize = Math.min(screenWidth - 40, 520);
+
+    // House label positions (percent-based so they scale cleanly)
+    const housePositions: HousePosition[] = [
+      { top: "10%", left: "50%", transform: [{ translateX: -12 }] }, // 1
+      { top: "3%", left: "20%" }, // 2
+      { top: "20%", left: "5%", transform: [{ translateY: -12 }] }, // 3
+      { bottom: "50%", left: "20%" }, // 4
+      { bottom: "15%", left: "7%", transform: [{ translateX: -12 }] }, // 5
+      { bottom: "5%", right: "73%" }, // 6
+      { bottom: "10%", left: "45%", transform: [{ translateY: -12 }] }, // 7
+      { bottom: 0, right: "20%" }, // 8
+      { top: "70%", right: "2%" }, // 9
+      { top: "40%", right: "25%" }, // 10
+      { bottom: "70%", right: "3%" }, // 11
+      { top: 0, right: "20%" }, // 12
+    ];
 
     return (
       <View style={styles.chartSection}>
@@ -156,72 +193,81 @@ const ChartDetailScreen: React.FC = () => {
           North Indian Chart
         </Text>
 
-        <View style={[styles.chartContainer, { backgroundColor: colors.cosmos.deep }]}>
-          <View style={[styles.northIndianChart, { width: chartSize, height: chartSize }]}>
-            {renderChartHouses(houseSize)}
+        <View
+          style={[
+            styles.chartContainer,
+            { backgroundColor: colors.cosmos.deep },
+          ]}
+        >
+          <View
+            style={[
+              styles.northIndianChart,
+              { width: chartSize, height: chartSize },
+            ]}
+          >
+            {/* Correct grid lines */}
+            <View style={styles.diagonalLine1} />
+            <View style={styles.diagonalLine2} />
+            <View style={styles.centerSquare}>
+              <Text style={styles.ascendantText}>
+                Asc: {chartData.ascSign}
+              </Text>
+            </View>
+
+            {/* House labels + planets */}
+            {chartData.houses.map((house: any, index: number) => (
+              <View
+                key={`house-${index + 1}`}
+                style={[
+                  styles.houseContainer,
+                  {
+                    position: "absolute",
+                    ...(housePositions[index] as ViewStyle),
+                  },
+                ]}
+              >
+                <Text style={styles.houseNumberText}>{index + 1}</Text>
+                <Text style={styles.houseSignText}>{house.sign}</Text>
+                <View style={styles.planetsRow}>
+                  {house.planets.map((p: string, i: number) => (
+                    <Text key={`${p}-${i}`} style={styles.planetChip}>
+                      {p}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            ))}
           </View>
         </View>
       </View>
     );
   };
 
-  const renderChartHouses = (houseSize: number) => {
-    if (!chartData) return null;
-
-    const positions = [
-      { top: 0, left: houseSize, house: 1 },
-      { top: 0, left: houseSize * 2, house: 2 },
-      { top: 0, left: houseSize * 3, house: 3 },
-      { top: houseSize, left: houseSize * 3, house: 4 },
-      { top: houseSize * 2, left: houseSize * 3, house: 5 },
-      { top: houseSize * 3, left: houseSize * 2, house: 6 },
-      { top: houseSize * 3, left: houseSize, house: 7 },
-      { top: houseSize * 3, left: 0, house: 8 },
-      { top: houseSize * 2, left: 0, house: 9 },
-      { top: houseSize, left: 0, house: 10 },
-      { top: 0, left: 0, house: 11 },
-      { top: houseSize, left: houseSize, house: 12 },
-    ];
-
-    return positions.map(pos => {
-      const houseData = chartData.houses[pos.house - 1];
-      return (
-        <View
-          key={pos.house}
-          style={[
-            styles.chartHouse,
-            {
-              position: 'absolute',
-              top: pos.top,
-              left: pos.left,
-              width: houseSize,
-              height: houseSize,
-              backgroundColor: pos.house === 12 ? colors.cosmos.deep : 'transparent',
-            },
-          ]}
-        >
-          <Text style={[styles.houseNumber, { color: colors.brand.primary }]}>{pos.house}</Text>
-          <Text style={[styles.houseSign, { color: colors.text.tertiary }]}>{houseData.sign}</Text>
-          <View style={styles.planetsContainer}>
-            {houseData.planets.map((planet: string, idx: number) => (
-              <Text key={idx} style={[styles.planetText, { color: colors.brand.light }]}>
-                {planet}
-              </Text>
-            ))}
-          </View>
-        </View>
-      );
-    });
-  };
-
   const renderPredictionsSection = () =>
     chartData?.predictions && (
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Predictions</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+          Predictions
+        </Text>
         {chartData.predictions.map((prediction: string, index: number) => (
-          <View key={index} style={[styles.predictionCard, { backgroundColor: colors.cosmos.deep }]}>
-            <Text style={[styles.predictionIcon, { color: colors.brand.primary }]}>🌟</Text>
-            <Text style={[styles.predictionText, { color: colors.text.secondary }]}>{prediction}</Text>
+          <View
+            key={index}
+            style={[
+              styles.predictionCard,
+              { backgroundColor: colors.cosmos.deep },
+            ]}
+          >
+            <Text
+              style={[styles.emoj, { color: colors.brand.primary }]}
+              accessibilityLabel="prediction"
+            >
+              🌟
+            </Text>
+            <Text
+              style={[styles.predictionText, { color: colors.text.secondary }]}
+            >
+              {prediction}
+            </Text>
           </View>
         ))}
       </View>
@@ -230,11 +276,28 @@ const ChartDetailScreen: React.FC = () => {
   const renderStrengthsSection = () =>
     chartData?.strengths && (
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Strengths</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+          Strengths
+        </Text>
         {chartData.strengths.map((strength: string, index: number) => (
-          <View key={index} style={[styles.strengthCard, { backgroundColor: colors.cosmos.deep }]}>
-            <Text style={[styles.strengthIcon, { color: colors.brand.accent }]}>✨</Text>
-            <Text style={[styles.strengthText, { color: colors.text.secondary }]}>{strength}</Text>
+          <View
+            key={index}
+            style={[
+              styles.strengthCard,
+              { backgroundColor: colors.cosmos.deep },
+            ]}
+          >
+            <Text
+              style={[styles.emoj, { color: colors.brand.accent }]}
+              accessibilityLabel="strength"
+            >
+              ✨
+            </Text>
+            <Text
+              style={[styles.strengthText, { color: colors.text.secondary }]}
+            >
+              {strength}
+            </Text>
           </View>
         ))}
       </View>
@@ -243,11 +306,28 @@ const ChartDetailScreen: React.FC = () => {
   const renderRemediesSection = () =>
     chartData?.remedies && (
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Remedies</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+          Remedies
+        </Text>
         {chartData.remedies.map((remedy: string, index: number) => (
-          <View key={index} style={[styles.remedyCard, { backgroundColor: colors.cosmos.deep }]}>
-            <Text style={[styles.remedyIcon, { color: colors.brand.primary }]}>🔮</Text>
-            <Text style={[styles.remedyText, { color: colors.text.secondary }]}>{remedy}</Text>
+          <View
+            key={index}
+            style={[
+              styles.remedyCard,
+              { backgroundColor: colors.cosmos.deep },
+            ]}
+          >
+            <Text
+              style={[styles.emoj, { color: colors.brand.primary }]}
+              accessibilityLabel="remedy"
+            >
+              🔮
+            </Text>
+            <Text
+              style={[styles.remedyText, { color: colors.text.secondary }]}
+            >
+              {remedy}
+            </Text>
           </View>
         ))}
       </View>
@@ -256,38 +336,41 @@ const ChartDetailScreen: React.FC = () => {
   // --- Screen Render ---
   if (loading) {
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.cosmos.void }]}>
-          <CorporateProfessionalHeader
-            title={chartTitle}
-            showBackButton
-            onBackPress={() => navigation.goBack()}
-          />
-          {renderLoadingState()}
-        </SafeAreaView>
-    );
-  }
-
-  return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.cosmos.void }]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.cosmos.void }]}
+      >
         <CorporateProfessionalHeader
           title={chartTitle}
           showBackButton
           onBackPress={() => navigation.goBack()}
         />
-
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {renderNorthIndianChart()}
-          {renderPredictionsSection()}
-          {renderStrengthsSection()}
-          {renderRemediesSection()}
-          <View style={styles.bottomSpacing} />
-        </ScrollView>
+        {renderLoadingState()}
       </SafeAreaView>
-  
+    );
+  }
+
+  return (
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.cosmos.void }]}
+    >
+      <CorporateProfessionalHeader
+        title={chartTitle}
+        showBackButton
+        onBackPress={() => navigation.goBack()}
+      />
+
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {renderNorthIndianChart()}
+        {renderPredictionsSection()}
+        {renderStrengthsSection()}
+        {renderRemediesSection()}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -309,80 +392,140 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: spacing.lg,
   },
   loadingText: {
     fontSize: typography.body.fontSize,
     marginTop: spacing.md,
-    textAlign: 'center',
+    textAlign: "center",
   },
   chartSection: {
     padding: spacing.lg,
   },
   sectionTitle: {
     fontSize: typography.heading2.fontSize,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: spacing.md,
-    textAlign: 'center',
+    textAlign: "center",
   },
   chartContainer: {
     borderRadius: radius.lg,
     padding: spacing.lg,
-    alignItems: 'center',
+    alignItems: "center",
     ...shadows.emphasis,
   },
   northIndianChart: {
-    position: 'relative',
+    position: "relative",
     borderWidth: 2,
     borderColor: colors.brand.primary,
+    backgroundColor: "transparent",
+    overflow: "hidden",
   },
-  chartHouse: {
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
+
+  // --- Correct North Indian grid lines ---
+  diagonalLine1: {
+    position: "absolute",
+    width: "141.4%", // sqrt(2) * 100%
+    height: 2,
+    backgroundColor: colors.brand.primary,
+    top: "50%",
+    left: "-20.7%",
+    transform: [{ rotate: "45deg" }],
+  },
+  diagonalLine2: {
+    position: "absolute",
+    width: "141.4%",
+    height: 2,
+    backgroundColor: colors.brand.primary,
+    top: "50%",
+    left: "-20.7%",
+    transform: [{ rotate: "-45deg" }],
+  },
+  centerSquare: {
+    position: "absolute",
+    top: "14.4%",
+    left: "14.4%",
+    width: "71.2%", // fits exactly between midpoints
+    height: "71.2%",
+    borderWidth: 2,
+    borderColor: colors.brand.primary,
+    transform: [{ rotate: "45deg" }],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ascendantText: {
+    transform: [{ rotate: "-45deg" }],
+    fontSize: Math.min(screenWidth * 0.04, 18),
+    fontWeight: "700",
+    color: colors.brand.primary,
+    position: "absolute",
+    top: "40%",
+    right: "50%",
+  },
+
+  // House labels
+  houseContainer: {
     padding: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  houseNumber: {
+  houseNumberText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.brand.primary,
+    marginBottom: 2,
+  },
+  houseSignText: {
     fontSize: 10,
-    fontWeight: '600',
-    position: 'absolute',
-    top: 2,
-    left: 2,
+    color: colors.text.tertiary,
+    marginBottom: 2,
   },
-  houseSign: {
-    fontSize: 8,
-    position: 'absolute',
-    top: 2,
-    right: 2,
+  planetsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 2,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  planetsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  planetText: {
+  planetChip: {
     fontSize: 10,
-    fontWeight: '500',
-    marginHorizontal: 1,
+    fontWeight: "600",
+    color: colors.brand.light,
+    marginHorizontal: 2,
   },
+
+  // Sections
   section: {
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.lg,
   },
   predictionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: radius.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
     ...shadows.subtle,
   },
-  predictionIcon: {
+  strengthCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    ...shadows.subtle,
+  },
+  remedyCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    ...shadows.subtle,
+  },
+  emoj: {
     fontSize: 20,
     marginRight: spacing.sm,
   },
@@ -391,34 +534,10 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 20,
   },
-  strengthCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: radius.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    ...shadows.subtle,
-  },
-  strengthIcon: {
-    fontSize: 20,
-    marginRight: spacing.sm,
-  },
   strengthText: {
     fontSize: typography.body.fontSize,
     flex: 1,
     lineHeight: 20,
-  },
-  remedyCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: radius.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    ...shadows.subtle,
-  },
-  remedyIcon: {
-    fontSize: 20,
-    marginRight: spacing.sm,
   },
   remedyText: {
     fontSize: typography.body.fontSize,
