@@ -38,7 +38,7 @@ import { corpAstroDarkTheme } from '../../components/DesignSystem/DarkTheme';
 import { designTokens, spacing, typography, radius, colors, shadows, cards, badges, animations } from '../../components/DesignSystem/designTokens';
 
 // Components
-import CorporateProfessionalHeader from '../../components/professional/CorporateProfessionalHeader';
+import CorporateHeader from '../../components/professional/CorporateProfessionalHeader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -81,12 +81,32 @@ const SettingsScreen: React.FC = () => {
   // ============================================================================
   // STATE MANAGEMENT
   // ============================================================================
-
-  const [notifications, setNotifications] = useState(true);
+  
+  // Notification Settings
+  const [pushNotifications, setPushNotifications] = useState(true);
   const [dailyHoroscope, setDailyHoroscope] = useState(true);
-  const [biometricAuth, setBiometricAuth] = useState(false);
-  const [autoSync, setAutoSync] = useState(true);
+  const [lunarAlerts, setLunarAlerts] = useState(true);
+  const [retrogradeAlerts, setRetrogradeAlerts] = useState(true);
   const [emailReports, setEmailReports] = useState(false);
+  
+  // Astrology Preferences
+  const [zodiacSystem, setZodiacSystem] = useState('Tropical');
+  const [houseSystem, setHouseSystem] = useState('Placidus');
+  const [aspectOrbs, setAspectOrbs] = useState('Default');
+  const [showAsteroids, setShowAsteroids] = useState(false);
+  const [showFixedStars, setShowFixedStars] = useState(true);
+  
+  // App Preferences
+  const [darkMode, setDarkMode] = useState(true);
+  const [language, setLanguage] = useState('English');
+  const [hapticFeedback, setHapticFeedback] = useState(true);
+  const [autoSync, setAutoSync] = useState(true);
+  
+  // Privacy & Data
+  const [biometricAuth, setBiometricAuth] = useState(false);
+  const [analytics, setAnalytics] = useState(true);
+  const [personalizedAds, setPersonalizedAds] = useState(false);
+  const [dataSharing, setDataSharing] = useState(false);
 
   // ============================================================================
   // EVENT HANDLERS
@@ -96,11 +116,16 @@ const SettingsScreen: React.FC = () => {
     navigation.goBack();
   };
 
-  const showComingSoon = () => {
+  const showComingSoon = (featureName: string = 'This feature') => {
     Alert.alert(
-      "Coming Soon",
-      "This feature will be available in a future update.",
-      [{ text: "OK", style: "default" }]
+      'Coming Soon',
+      `${featureName} is currently in development and will be available soon!`,
+      [
+        {
+          text: 'Got it!',
+          style: 'default',
+        },
+      ]
     );
   };
 
@@ -124,180 +149,138 @@ const SettingsScreen: React.FC = () => {
   // ============================================================================
 
   const settingSections: SettingSection[] = [
-    {
-      title: "Notifications & Alerts",
-      subtitle: "Stay informed with timely updates",
-      description: "Manage your notification preferences and customize how you receive cosmic insights and important updates.",
-      energy: "Communication",
+     // APP PREFERENCES
+     {
+      title: 'App Settings',
+      subtitle: 'Customize your app experience',
+      description: 'Adjust how the app looks and behaves',
+      energy: 'Medium',
       items: [
         {
-          id: 'push-notifications',
-          title: 'Push Notifications',
-          subtitle: 'Essential alerts and updates',
-          icon: 'notifications',
+          id: 'dark-mode',
+          title: 'Dark Mode',
+          subtitle: darkMode ? 'On' : 'Off',
+          icon: 'moon',
           type: 'toggle',
-          value: notifications,
-          action: () => setNotifications(!notifications),
-          energyType: 'Essential',
+          value: darkMode,
+          action: () => setDarkMode(!darkMode),
         },
         {
-          id: 'daily-horoscope',
-          title: 'Daily Horoscope',
-          subtitle: 'Morning cosmic insights',
-          icon: 'sunny',
+          id: 'language',
+          title: 'Language',
+          subtitle: language,
+          icon: 'language',
+          type: 'button',
+          action: () => showComingSoon('Language Selection'),
+        },
+        {
+          id: 'haptic-feedback',
+          title: 'Haptic Feedback',
+          subtitle: 'Touch responses',
+          icon: 'phone-portrait',
           type: 'toggle',
-          value: dailyHoroscope,
-          action: () => setDailyHoroscope(!dailyHoroscope),
-          energyType: 'Daily',
-        },
-        {
-          id: 'email-reports',
-          title: 'Email Reports',
-          subtitle: 'Weekly business insights via email',
-          icon: 'mail',
-          type: 'toggle',
-          value: emailReports,
-          action: () => setEmailReports(!emailReports),
-          energyType: 'Business',
-          premium: true,
-        },
-      ]
-    },
-    {
-      title: "Astrology & Charts",
-      subtitle: "Customize your cosmic experience",
-      description: "Personalize your astrology settings and chart preferences to align with your spiritual journey and business needs.",
-      energy: "Cosmic",
-      items: [
-        {
-          id: 'birth-details',
-          title: 'Birth Details',
-          subtitle: 'Update your cosmic blueprint',
-          icon: 'person-circle',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Identity',
-        },
-        {
-          id: 'chart-style',
-          title: 'Chart Style',
-          subtitle: 'North Indian Traditional',
-          icon: 'pie-chart',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Traditional',
-        },
-        {
-          id: 'house-system',
-          title: 'House System',
-          subtitle: 'Placidus (Western)',
-          icon: 'home',
-          type: 'button',
-          action: showPremiumRequired,
-          energyType: 'Advanced',
-          premium: true,
-        },
-        {
-          id: 'calculation-preferences',
-          title: 'Calculation Preferences',
-          subtitle: 'Ayanamsa & time settings',
-          icon: 'calculator',
-          type: 'button',
-          action: showPremiumRequired,
-          energyType: 'Precision',
-          premium: true,
-        },
-      ]
-    },
-    {
-      title: "Security & Privacy",
-      subtitle: "Protect your personal data",
-      description: "Secure your cosmic information with advanced privacy settings and authentication methods.",
-      energy: "Protection",
-      items: [
-        {
-          id: 'biometric-auth',
-          title: 'Biometric Authentication',
-          subtitle: 'Secure app access with Face/Touch ID',
-          icon: 'finger-print',
-          type: 'toggle',
-          value: biometricAuth,
-          action: () => setBiometricAuth(!biometricAuth),
-          energyType: 'Security',
+          value: hapticFeedback,
+          action: () => setHapticFeedback(!hapticFeedback),
         },
         {
           id: 'auto-sync',
           title: 'Auto Sync',
-          subtitle: 'Keep data synchronized across devices',
+          subtitle: 'Keep data up to date',
           icon: 'sync',
           type: 'toggle',
           value: autoSync,
           action: () => setAutoSync(!autoSync),
-          energyType: 'Sync',
         },
-        {
-          id: 'privacy-policy',
-          title: 'Privacy Policy',
-          subtitle: 'View our privacy practices',
-          icon: 'shield-checkmark',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Legal',
-        },
-        {
-          id: 'data-export',
-          title: 'Export My Data',
-          subtitle: 'Download your cosmic information',
-          icon: 'download',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Data',
-        },
-      ]
+      ],
     },
+    
+
+
+
+    // NOTIFICATIONS SECTION
     {
-      title: "Support & Information",
-      subtitle: "Get help and app details",
-      description: "Access support resources, app information, and connect with our team for assistance.",
-      energy: "Support",
+      title: 'Notifications',
+      subtitle: 'Stay updated with cosmic events',
+      description: 'Customize what notifications you receive and how',
+      energy: 'Medium',
       items: [
         {
-          id: 'help-center',
-          title: 'Help Center',
-          subtitle: 'Get support and answers',
-          icon: 'help-circle',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Assistance',
+          id: 'push-notifications',
+          title: 'Push Notifications',
+          subtitle: 'App alerts and updates',
+          icon: 'notifications',
+          type: 'toggle',
+          value: pushNotifications,
+          action: () => setPushNotifications(!pushNotifications),
         },
         {
-          id: 'contact-us',
-          title: 'Contact Us',
-          subtitle: 'Reach our support team',
-          icon: 'chatbubble',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Contact',
+          id: 'daily-horoscope',
+          title: 'Daily Horoscope',
+          subtitle: 'Your daily cosmic forecast',
+          icon: 'sunny',
+          type: 'toggle',
+          value: dailyHoroscope,
+          action: () => setDailyHoroscope(!dailyHoroscope),
         },
         {
-          id: 'app-version',
-          title: 'App Version',
-          subtitle: '2.0.0 (Premium)',
-          icon: 'information-circle',
-          type: 'info',
-          energyType: 'Info',
+          id: 'lunar-alerts',
+          title: 'Lunar Phase Alerts',
+          subtitle: 'New moons, full moons, and eclipses',
+          icon: 'moon',
+          type: 'toggle',
+          value: lunarAlerts,
+          action: () => setLunarAlerts(!lunarAlerts),
         },
         {
-          id: 'check-updates',
-          title: 'Check for Updates',
-          subtitle: 'Latest version available',
-          icon: 'refresh',
-          type: 'button',
-          action: showComingSoon,
-          energyType: 'Update',
+          id: 'retrograde-alerts',
+          title: 'Retrograde Alerts',
+          subtitle: 'Planetary retrogrades and their effects',
+          icon: 'repeat',
+          type: 'toggle',
+          value: retrogradeAlerts,
+          action: () => setRetrogradeAlerts(!retrogradeAlerts),
         },
-      ]
+        {
+          id: 'email-reports',
+          title: 'Email Reports',
+          subtitle: 'Weekly insights and updates',
+          icon: 'mail',
+          type: 'toggle',
+          value: emailReports,
+          action: () => setEmailReports(!emailReports),
+          premium: true,
+        },
+      ],
     },
+    
+    // ASTROLOGY PREFERENCES
+    {
+      title: 'Astrology Settings',
+      subtitle: 'Customize your cosmic experience',
+      description: 'Advanced settings for astrology calculations and displays',
+      energy: 'High',
+      items: [
+        {
+          id: 'zodiac-system',
+          title: 'Zodiac System',
+          subtitle: zodiacSystem,
+          icon: 'planet',
+          type: 'button',
+          action: () => showComingSoon('Zodiac System Selection'),
+        },
+        {
+          id: 'house-system',
+          title: 'House System',
+          subtitle: houseSystem,
+          icon: 'home',
+          type: 'button',
+          action: () => showComingSoon('House System Selection'),
+        },
+       
+      ],
+    },
+    
+   
   ];
 
   // ============================================================================
@@ -395,6 +378,7 @@ const SettingsScreen: React.FC = () => {
     return (
       <View key={section.title} style={styles.section}>
         {/* Section Header - Same pattern as Services screen */}
+
         <View style={styles.sectionHeaderContainer}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
           <Text style={styles.sectionSubtitle}>{section.subtitle}</Text>
@@ -424,12 +408,8 @@ const SettingsScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <CorporateProfessionalHeader
-        title="Settings"
-        subtitle="Customize Your Experience"
-        showBackButton={true}
-        onBackPress={handleBack}
-      />
+      <CorporateHeader variant="centered" title="App Settings" showBackButton />
+
       
       <ScrollView 
         style={styles.scrollView}

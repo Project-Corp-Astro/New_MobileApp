@@ -26,8 +26,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: '#64748b',
         tabBarStyle: {
           backgroundColor: '#08080F', // Deep space dark
-          borderTopColor: '#1a1a2e',
-          borderTopWidth: 1,
+          borderTopWidth: 0,
           height: 90,
           paddingBottom: 20,
           paddingTop: 10,

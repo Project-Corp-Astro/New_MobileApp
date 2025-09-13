@@ -20,10 +20,10 @@ type RootStackParamList = {
   // Add other screens as needed
 };
 import { BaseScreen } from '../../components/menusection/BaseScreen';
-import CorporateProfessionalHeader from '../../components/professional/CorporateProfessionalHeader';
 import { corpAstroDarkTheme } from '../../components/DesignSystem/DarkTheme';
 import { designTokens, typography } from '../../components/DesignSystem/designTokens';
 import { spacing } from '../../components/DesignSystem/SpacingScale';
+import CorporateHeader from '../../components/professional/CorporateProfessionalHeader';
 
 interface Reward {
   id: string;
@@ -132,23 +132,7 @@ const ReferUsScreen: React.FC = () => {
 
   return (
     <BaseScreen backgroundColor={String(theme.colors.cosmos.void)}>
-      <CorporateProfessionalHeader
-        title="Refer & Earn"
-        showBackButton
-        onBackPress={() => navigation.goBack()}
-        rightComponent={
-          <Pressable
-            style={{
-              padding: 8,
-              borderRadius: 8,
-              backgroundColor: 'rgba(46, 134, 222, 0.2)',
-            }}
-            onPress={handleShare}
-          >
-            <Text style={{ fontSize: 16 }}>📤</Text>
-          </Pressable>
-        }
-      />
+    <CorporateHeader variant="centered" title="Refer Us" showBackButton />
       
       <ScrollView
         showsVerticalScrollIndicator={false}

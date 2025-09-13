@@ -10,7 +10,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import TabLayout from '../tabs/_layout';
 
 import ProfileScreen from '../screens/Menu/ProfileScreen';
+import BusinessScreen from '../screens/Menu/BusinessScreen';
 import SettingsScreen from '../screens/Menu/SettingsScreen';
+import NotificationScreen from '../screens/Menu/NotificationScreen';  
 import ReportsScreen from '../screens/Menu/ReportsScreen';
 import RateAppScreen from '../screens/Menu/RateAppScreen';
 import ReferUsScreen from '../screens/Menu/ReferUsScreen';
@@ -18,6 +20,7 @@ import CalendarScreen from '../screens/Menu/CalendarScreen';
 import SubscriptionScreen from '../screens/Menu/subscription';
 import HelpSupportScreen from '../screens/Menu/HelpSupportScreen';
 import ChartDetailScreen from '../screens/Charts/ChartDetailScreen';
+import AllColorsScreen from '../screens/Menu/AllColorsScreen';
 
 
 
@@ -85,6 +88,18 @@ export default function App() {
             name="ChartDetailScreen" 
             component={ChartDetailScreen} options={{ headerShown: false }}
           />  
+          <Stack.Screen 
+            name="NotificationScreen" 
+            component={NotificationScreen} options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="BusinessScreen" 
+            component={BusinessScreen} options={{ headerShown: false }}
+          />
+          <Stack.Screen
+          name="AllColorsScreen"
+          component={AllColorsScreen}
+          />
 
         </Stack.Navigator>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

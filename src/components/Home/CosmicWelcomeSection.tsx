@@ -1,17 +1,29 @@
 /**
  * Cosmic Welcome Section Component
- * 
+ *
  * Handles the hero section with user greeting, ascendant badge,
  * and business intelligence dashboard metrics.
+ *
+ * Updated: uses corpAstroDarkTheme.mystical.light for hero background and
+ * corpAstroDarkTheme.mystical.glow for the business dashboard background.
  */
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { corpAstroDarkTheme } from '../DesignSystem/DarkTheme';
-import { typography, borderOpacity } from '../DesignSystem/designTokens';
+import React, { useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Easing,
+  Platform,
+  AccessibilityInfo,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { corpAstroDarkTheme } from "../DesignSystem/DarkTheme";
+import { typography, borderOpacity, spacing } from "../DesignSystem/designTokens";
 
 interface CosmicWelcomeSectionProps {
-  greeting: string;
+  greeting?: string;
   userName: string;
 }
 
@@ -20,347 +32,390 @@ export const CosmicWelcomeSection: React.FC<CosmicWelcomeSectionProps> = ({
   userName,
 }) => {
   const theme = corpAstroDarkTheme;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideUpAnim = useRef(new Animated.Value(18)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Accessibility: reduce motion respect
+  useEffect(() => {
+    let shouldAnimate = true;
+
+    const checkReduceMotion = async () => {
+      if (Platform.OS === "web") {
+        // web fallback: assume animations ok
+        shouldAnimate = true;
+      } else {
+        const reduceMotion = await AccessibilityInfo.isReduceMotionEnabled();
+        shouldAnimate = !reduceMotion;
+      }
+
+      // Entrance animation
+      if (shouldAnimate) {
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideUpAnim, {
+            toValue: 0,
+            duration: 700,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }),
+        ]).start();
+
+        // pulse loop
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(pulseAnim, {
+              toValue: 1.06,
+              duration: 900,
+              useNativeDriver: true,
+            }),
+            Animated.timing(pulseAnim, {
+              toValue: 1,
+              duration: 900,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+      } else {
+        fadeAnim.setValue(1);
+        slideUpAnim.setValue(0);
+        pulseAnim.setValue(1);
+      }
+    };
+
+    checkReduceMotion();
+  }, [fadeAnim, slideUpAnim, pulseAnim]);
+
+  const getGreeting = () => {
+    if (greeting) return greeting;
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  };
+
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const currentTime = new Date();
 
   return (
-    <View style={styles.modernWelcomeSection}>
-      {/* Hero Section */}
-      <View style={[styles.professionalHeroCard, { 
-        backgroundColor: theme.colors.cosmos.deep,
-        marginHorizontal: 16,
-        marginTop: 16,
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.08)',
-      }]}>
-        {/* Greeting Section */}
-        <View style={styles.heroMainSection}>
-          <View style={styles.greetingSection}>
-            <Text style={[styles.greetingTime, { 
-              color: theme.colors.neutral.light,
-              ...typography.caption, // 12px for accessibility compliance  
-              fontWeight: '400',
-              marginBottom: 4,
-              opacity: 0.95, // Improved contrast for accessibility compliance
-            }]}>
-              {greeting}
-            </Text>
-            <Text style={[styles.userName, { 
-              color: theme.colors.neutral.text,
-              ...typography.heading3, // 20px - proper hierarchy with 1.67x ratio from greeting
-              fontWeight: '600',
-              marginBottom: 2,
-            }]}>
-              {userName}
-            </Text>
-          </View>
-          
-          {/* Ascendant Badge */}
-          <View style={[styles.ascendantBadge, { 
-            backgroundColor: theme.colors.brand.primary,
-            borderRadius: 8,
-            paddingHorizontal: 10,
-            paddingVertical: 6,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 6,
-          }]}>
-            <Text style={[styles.ascendantSymbol, { 
-              color: '#000000',
-              ...typography.body, // 14px for proper icon size
-              fontWeight: '600',
-            }]}>♈</Text>
-            <View style={styles.ascendantInfo}>
-              <Text style={[styles.ascendantLabel, { 
-                color: '#000000',
-                ...typography.caption, // Updated to meet 12px minimum accessibility requirement
-                fontWeight: '500',
-                opacity: 0.9, // Improved contrast for accessibility compliance
-              }]}>ASC</Text>
-              <Text style={[styles.ascendantSign, { 
-                color: '#000000',
-                ...typography.caption, // 12px for accessibility compliance
-                fontWeight: '600',
-              }]}>Aries</Text>
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, transform: [{ translateY: slideUpAnim }] },
+      ]}
+    >
+      {/* HERO: uses mystical.light as overall background and theme-based gradient */}
+      <View
+        style={[
+          styles.heroOuter,
+          { backgroundColor: String(theme.colors.mystical.light) },
+        ]}
+      >
+       <View style={styles.heroCard}  >
+          <View style={styles.heroContent}>
+            <View style={styles.heroLeft}>
+              <Text
+                accessibilityRole="header"
+                accessibilityLabel={`${getGreeting()} ${userName}`}
+                style={[styles.greeting, typography.heading3]}
+              >
+                {getGreeting()}, {userName}
+              </Text>
+
+              <Text style={[styles.subtitle, typography.body]}>
+                Your cosmic journey begins here
+              </Text>
+
+              <Text style={[styles.time, typography.body]}>
+                {formatTime(currentTime)}
+              </Text>
+
+              <View style={styles.zodiacInfo}>
+                <View style={styles.zodiacItem}>
+                  <Text style={[styles.zodiacLabel, typography.caption]}>Sun Sign</Text>
+                  <Text style={[styles.zodiacValue, typography.bodyLarge]}>Leo</Text>
+                </View>
+
+                <View style={styles.zodiacItem}>
+                  <Text style={[styles.zodiacLabel, typography.caption]}>Moon Sign</Text>
+                  <Text style={[styles.zodiacValue, typography.bodyLarge]}>Taurus</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.heroRight}>
+              <Animated.View style={[styles.zodiacIcon, { transform: [{ scale: pulseAnim }] }]}>
+                <LinearGradient
+                  colors={[String(theme.colors.brand.primary), String(theme.colors.mystical.royal)]}
+                  style={styles.zodiacGradient}
+                >
+                  <Text accessible accessibilityLabel="Ascendant symbol" style={styles.zodiacSymbol}>
+                    ♌
+                  </Text>
+                </LinearGradient>
+              </Animated.View>
             </View>
           </View>
-        </View>
-
-        {/* Value Proposition */}
-        <View style={[styles.introSection, { 
-          paddingTop: 12,
-          borderTopWidth: 1,
-          borderTopColor: `rgba(255, 255, 255, ${borderOpacity.subtle})`, // Standardized using design tokens
-          marginTop: 12,
-        }]}>
-          <Text style={[styles.introTagline, { 
-            color: theme.colors.brand.primary,
-            ...typography.body, // 14px - clear hierarchy step from description
-            fontWeight: '500',
-            textAlign: 'center',
-            marginBottom: 6,
-          }]}>
-            Align Your Success with the Stars
-          </Text>
-          <Text style={[styles.introDescription, { 
-            color: theme.colors.neutral.light,
-            ...typography.caption, // 12px for accessibility compliance
-            fontWeight: '400',
-            lineHeight: 16,
-            textAlign: 'center',
-            opacity: 0.9, // Improved contrast for accessibility compliance
-          }]}>
-            Transform astrological wisdom into actionable business intelligence
-          </Text>
-        </View>
+          </View>
       </View>
 
-      {/* Business Intelligence Dashboard */}
-      <View style={[styles.businessDashboard, { 
-        backgroundColor: theme.colors.cosmos.deep,
-        marginHorizontal: 16,
-        marginTop: 16,
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: `rgba(255, 255, 255, ${borderOpacity.subtle})`, // Standardized using design tokens
-      }]}>
+      {/* BUSINESS DASHBOARD: mystical.glow background */}
+      <View
+        style={[
+          styles.dashboard,
+          {
+            backgroundColor: String(theme.colors.mystical.glow),
+            borderColor: `rgba(255,255,255,${borderOpacity.subtle})`,
+          },
+        ]}
+        accessibilityLabel="Business intelligence dashboard"
+      >
         <View style={styles.dashboardHeader}>
           <View style={styles.dashboardTitleSection}>
-            <Text style={[styles.dashboardTitle, { 
-              color: theme.colors.neutral.text,
-              ...typography.bodyLarge, // 16px for improved hierarchy
-              fontWeight: '600',
-              marginBottom: 2,
-            }]}>
+            <Text style={[styles.dashboardTitle, typography.bodyLarge, { color: String(theme.colors.neutral.light) }]}>
               Business Intelligence
             </Text>
-            <Text style={[styles.dashboardSubtitle, { 
-              color: theme.colors.neutral.light,
-              ...typography.caption, // 12px for accessibility compliance
-              fontWeight: '400',
-              opacity: 0.9, // Improved contrast for accessibility compliance
-            }]}>
+            <Text style={[styles.dashboardSubtitle, typography.caption, { color: String(theme.colors.neutral.light) }]}>
               Today's insights and recommendations
             </Text>
           </View>
-          <View style={[styles.liveIndicator, { 
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-            borderRadius: 8,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderWidth: 1,
-            borderColor: 'rgba(76, 175, 80, 0.3)',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-          }]}>
-            <View style={[styles.pulseIndicator, { 
-              backgroundColor: '#4CAF50',
-              width: 4,
-              height: 4,
-              borderRadius: 2,
-            }]} />
-            <Text style={[styles.liveText, { 
-              color: '#4CAF50',
-              ...typography.caption, // Updated to meet 12px minimum accessibility requirement
-              fontWeight: '500',
-            }]}>LIVE</Text>
+
+          <View style={styles.liveIndicator}>
+            <View style={styles.pulseIndicator} />
+            <Text style={[styles.liveText, typography.caption]}>LIVE</Text>
           </View>
         </View>
-        
-        <View style={[styles.metricsGrid, { marginTop: 12, gap: 10 }]}>
-          <View style={[styles.metricCard, { 
-            flex: 1,
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            borderRadius: 8,
-            padding: 12,
-            borderWidth: 1,
-            borderColor: 'rgba(76, 175, 80, 0.2)',
-            alignItems: 'center',
-          }]}>
-            <View style={[styles.metricIcon, { 
-              backgroundColor: 'rgba(76, 175, 80, 0.1)',
-              borderRadius: 12,
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 6,
-            }]}>
-              <Text style={[styles.metricIconText, { ...typography.caption }]}>📈</Text>
+
+        <View style={styles.metricsGrid}>
+          <View
+            style={[
+              styles.metricCard,
+              { borderColor: theme.colors.cosmos.medium },
+            ]}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: "rgba(76,175,80,0.08)" }]}>
+              <Text style={[styles.metricIconText, typography.caption]}>📈</Text>
             </View>
-            <Text style={[styles.metricLabel, { 
-              color: theme.colors.neutral.light,
-              ...typography.caption, // Updated to meet 12px minimum accessibility requirement
-              fontWeight: '400',
-              marginBottom: 2,
-            }]}>Markets</Text>
-            <Text style={[styles.metricValue, { 
-              color: '#4CAF50',
-              ...typography.caption, // 12px for accessibility compliance
-              fontWeight: '600',
-            }]}>+2.4%</Text>
+            <Text style={[styles.metricLabel, typography.caption, { color: String(theme.colors.neutral.light) }]}>
+              Markets
+            </Text>
+            <Text style={[styles.metricValue, typography.bodyLarge, { color: "#4CAF50" }]}>+2.4%</Text>
           </View>
-          
-          <View style={[styles.metricCard, { 
-            flex: 1,
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            borderRadius: 8,
-            padding: 12,
-            borderWidth: 1,
-            borderColor: 'rgba(255, 193, 7, 0.2)',
-            alignItems: 'center',
-          }]}>
-            <View style={[styles.metricIcon, { 
-              backgroundColor: 'rgba(255, 193, 7, 0.1)',
-              borderRadius: 12,
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 6,
-            }]}>
-              <Text style={[styles.metricIconText, { ...typography.caption }]}>⚡</Text>
+
+          <View
+            style={[
+              styles.metricCard,
+              { borderColor: theme.colors.cosmos.medium },
+            ]}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: "rgba(255,193,7,0.08)" }]}>
+              <Text style={[styles.metricIconText, typography.caption]}>⚡</Text>
             </View>
-            <Text style={[styles.metricLabel, { 
-              color: theme.colors.neutral.light,
-              ...typography.caption, // Updated to meet 12px minimum accessibility requirement
-              fontWeight: '400',
-              marginBottom: 2,
-            }]}>Energy</Text>
-            <Text style={[styles.metricValue, { 
-              color: '#FFC107',
-              ...typography.caption, // 12px for accessibility compliance
-              fontWeight: '600',
-            }]}>High</Text>
+            <Text style={[styles.metricLabel, typography.caption, { color: String(theme.colors.neutral.light) }]}>
+              Energy
+            </Text>
+            <Text style={[styles.metricValue, typography.bodyLarge, { color: "#FFC107" }]}>High</Text>
           </View>
-          
-          <View style={[styles.metricCard, { 
-            flex: 1,
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            borderRadius: 8,
-            padding: 12,
-            borderWidth: 1,
-            borderColor: 'rgba(156, 39, 176, 0.2)',
-            alignItems: 'center',
-          }]}>
-            <View style={[styles.metricIcon, { 
-              backgroundColor: 'rgba(156, 39, 176, 0.1)',
-              borderRadius: 12,
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 6,
-            }]}>
-              <Text style={[styles.metricIconText, { ...typography.caption }]}>🌟</Text>
+
+          <View
+            style={[
+              styles.metricCard,
+              { borderColor: theme.colors.cosmos.medium },
+            ]}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: "rgba(156,39,176,0.08)" }]}>
+              <Text style={[styles.metricIconText, typography.caption]}>🌟</Text>
             </View>
-            <Text style={[styles.metricLabel, { 
-              color: theme.colors.neutral.light,
-              ...typography.caption, // Updated to meet 12px minimum accessibility requirement
-              fontWeight: '400',
-              marginBottom: 2,
-            }]}>Fortune</Text>
-            <Text style={[styles.metricValue, { 
-              color: '#9C27B0',
-              ...typography.caption, // 12px for accessibility compliance
-              fontWeight: '600',
-            }]}>87%</Text>
+            <Text style={[styles.metricLabel, typography.caption, { color: String(theme.colors.neutral.light) }]}>
+              Fortune
+            </Text>
+            <Text style={[styles.metricValue, typography.bodyLarge, { color: "#9C27B0" }]}>87%</Text>
           </View>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
+export default CosmicWelcomeSection;
+
 const styles = StyleSheet.create({
-  modernWelcomeSection: {
-    // Container styles
+  container: {
+    paddingBottom: spacing.lg,
   },
-  professionalHeroCard: {
-    // Hero card styles
+
+  // Hero
+  heroOuter: {
+    marginHorizontal: spacing.md,
+    borderRadius: 14,
+    overflow: "hidden",
   },
-  heroMainSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+  heroCard: {
+    borderRadius: 14,
+    padding: spacing.sm,
+
   },
-  greetingSection: {
+  heroContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  heroLeft: {
     flex: 1,
+    paddingRight: spacing.md,
   },
-  greetingTime: {
-    // Text styles handled by props
+  heroRight: {
+    width: 72,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  userName: {
-    // Text styles handled by props
+
+  greeting: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    marginBottom: 4,
+    fontSize: 18,
   },
-  ascendantBadge: {
-    // Badge styles handled by inline styles
+  subtitle: {
+    color: "rgba(255,255,255,0.78)",
+    marginBottom: 6,
+    fontSize: 12,
   },
-  ascendantSymbol: {
-    // Text styles handled by props
+  time: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    marginBottom: 8,
+    fontSize: 14,
   },
-  ascendantInfo: {
-    alignItems: 'center',
+
+  zodiacInfo: {
+    flexDirection: "row",
+    gap: spacing.sm as any,
   },
-  ascendantLabel: {
-    // Text styles handled by props
+  zodiacItem: {
+    alignItems: "center",
+    marginRight: spacing.md,
   },
-  ascendantSign: {
-    // Text styles handled by props
+  zodiacLabel: {
+    fontSize: 9,
+    color: "rgba(255,255,255,0.66)",
+    marginBottom: 2,
   },
-  introSection: {
-    // Section styles handled by inline styles
+  zodiacValue: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
-  introTagline: {
-    // Text styles handled by props
+
+  zodiacIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    overflow: "hidden",
   },
-  introDescription: {
-    // Text styles handled by props
+  zodiacGradient: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  businessDashboard: {
-    // Dashboard styles handled by inline styles
+  zodiacSymbol: {
+    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "700",
+  },
+
+  // Dashboard
+  dashboard: {
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    borderRadius: 12,
+    padding: spacing.md,
+    borderWidth: 1,
   },
   dashboardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   dashboardTitleSection: {
     flex: 1,
+    paddingRight: spacing.md,
   },
   dashboardTitle: {
-    // Text styles handled by props
+    fontWeight: "600",
+    marginBottom: 2,
+    fontSize: 14,
   },
   dashboardSubtitle: {
-    // Text styles handled by props
+    opacity: 0.95,
+    marginBottom: 0,
+    fontSize: 11,
   },
+
+  // LIVE indicator
   liveIndicator: {
-    // Indicator styles handled by inline styles
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderColor: "rgba(76,175,80,0.28)",
+    backgroundColor: "rgba(76,175,80,0.06)",
   },
   pulseIndicator: {
-    // Pulse styles handled by inline styles
+    backgroundColor: "#4CAF50",
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
   },
   liveText: {
-    // Text styles handled by props
+    color: "#4CAF50",
+    fontWeight: "600",
+    fontSize: 11,
   },
+
+  // Metrics
   metricsGrid: {
-    flexDirection: 'row',
+    flexDirection: "row",
+    marginTop: spacing.sm,
+    justifyContent: "space-between",
+    gap: spacing.sm as any,
   },
   metricCard: {
-    // Card styles handled by inline styles
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "rgba(255,255,255,0.02)",
+    alignItems: "center",
+    borderWidth: 1,
+    marginHorizontal: 3,
   },
   metricIcon: {
-    // Icon styles handled by inline styles
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
   },
   metricIconText: {
-    // Text styles handled by props
+    fontSize: 12,
   },
   metricLabel: {
-    // Text styles handled by props
+    fontSize: 10,
+    marginBottom: 2,
   },
   metricValue: {
-    // Text styles handled by props
+    fontSize: 12,
+    fontWeight: "700",
   },
 });

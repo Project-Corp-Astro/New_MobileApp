@@ -21,10 +21,10 @@ type RootStackParamList = {
 };
 import { BaseScreen } from '../../components/menusection/BaseScreen';
 import { HeaderWithBack } from '../../navigation/HeaderWithBack';
-import CorporateProfessionalHeader from '../../components/professional/CorporateProfessionalHeader';
 import { corpAstroDarkTheme } from '../../components/DesignSystem/DarkTheme';
 import { designTokens, typography } from '../../components/DesignSystem/designTokens';
 import { spacing } from '../../components/DesignSystem/SpacingScale';
+import CorporateHeader from '../../components/professional/CorporateProfessionalHeader';
 
 type RateAppScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'RateApp'>;
 
@@ -131,13 +131,8 @@ const RateAppScreen: React.FC = () => {
 
   return (
     <BaseScreen backgroundColor={String(theme.colors.cosmos.void)}>
-      <CorporateProfessionalHeader
-        title="Rate Corp Astro"
-        subtitle="Share your experience"
-        showBackButton={true}
-        onBackPress={() => navigation.goBack()}
-      />
-      
+               <CorporateHeader variant="centered" title="Rate App" showBackButton />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
