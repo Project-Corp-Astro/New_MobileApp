@@ -47,7 +47,7 @@ export const HoroscopeCard: React.FC<HoroscopeCardProps> = ({
       style={({ pressed }) => [
         styles.horoscopeCard,
         {
-          backgroundColor: theme.colors.cosmos.deep,
+          backgroundColor: (currentData as any).background || theme.colors.cosmos.deep,
           borderColor: `${String(category.color)}20`,
           transform: [{ scale: pressed ? animations.pressedScale : 1 }],
         }

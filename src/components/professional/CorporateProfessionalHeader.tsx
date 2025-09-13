@@ -1,14 +1,14 @@
 /**
- * Corporate Professional Header - Corp Astro
+ * Corporate Header - Corp Astro
  *
- * Title + Subtitle aligned to the left,
- * Avatar/Profile on the right,
- * Back button optional.
+ * Supports two variants:
+ * 1. professional → Title + Subtitle on left, right icons
+ * 2. centered     → Title centered, back button on left
  *
  * @format
  */
 
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -16,23 +16,26 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-// Import design tokens
-import { corpAstroDarkTheme } from '../DesignSystem/DarkTheme';
+// Design system
+import { corpAstroDarkTheme } from "../DesignSystem/DarkTheme";
+import { spacing, typography, colors, radius } from "../DesignSystem/designTokens";
 
 type RootStackParamList = {
+  Home: undefined;
   ProfileScreen: undefined;
-  // Add other screens as needed
+  NotificationScreen: undefined;
 };
 
-interface CorporateProfessionalHeaderProps {
+interface CorporateHeaderProps {
   title?: string;
   subtitle?: string;
+  variant?: "professional" | "centered";
   showBackButton?: boolean;
   showNotificationIcon?: boolean;
   onBackPress?: () => void;
@@ -41,26 +44,36 @@ interface CorporateProfessionalHeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
-const CorporateProfessionalHeader = ({
-  title = 'CORP ASTRO',
-  subtitle = 'Business Intelligence',
+const CorporateHeader = ({
+  title="CORP ASTRO",
+  subtitle="Business Intelligence",
+  variant = "professional",
   showBackButton = false,
   showNotificationIcon = false,
   onBackPress,
   onNotificationPress,
   rightComponent,
   navigation,
-}: CorporateProfessionalHeaderProps) => {
+}: CorporateHeaderProps) => {
+  const route = useRoute();
+
+  // Default title fallback = screen name
+  const resolvedTitle = title || (route.name as string);
+
   return (
     <>
-      <StatusBar backgroundColor="transparent" barStyle="light-content" translucent />
+      <StatusBar
+        backgroundColor="transparent"
+        barStyle="light-content"
+        translucent
+      />
 
       <View style={styles.container}>
         <LinearGradient
           colors={[
-            'rgba(30, 39, 114, 0.98)', // Corporate blue
-            'rgba(15, 20, 70, 0.99)', // Deep professional blue
-            corpAstroDarkTheme.colors.cosmos.void, // Theme background
+            "rgba(30, 39, 114, 0.98)", // corporate blue
+            "rgba(15, 20, 70, 0.99)", // deep professional blue
+            corpAstroDarkTheme.colors.cosmos.void, // theme background
           ]}
           style={styles.gradient}
           start={{ x: 0, y: 0 }}
@@ -68,52 +81,86 @@ const CorporateProfessionalHeader = ({
         >
           <SafeAreaView>
             <View style={styles.header}>
-              {/* Left Section with Back + Title/SubTitle */}
-              <View style={styles.leftSection}>
-                {showBackButton && (
-                  <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={onBackPress}
-                    activeOpacity={0.7}
-                  >
-                    <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-                  </TouchableOpacity>
-                )}
-
-                <View style={styles.titleContainer}>
-                  <Text style={styles.title}>{title}</Text>
-                  {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-                </View>
-              </View>
-
-              {/* Spacer in Center (for balance) */}
-              <View style={styles.centerSection} />
-
-              {/* Right Section with Notification and Profile */}
-              <View style={styles.rightSection}>
-                {rightComponent || (
-                  <View style={styles.rightIconsContainer}>
-                    {showNotificationIcon && (
+              {/* Variant: professional */}
+              {variant === "professional" && (
+                <>
+                  {/* Left - Back + Title/SubTitle */}
+                  <View style={styles.leftSection}>
+                    {showBackButton && (
                       <TouchableOpacity
-                        onPress={onNotificationPress}
+                        style={styles.iconButton}
+                        onPress={onBackPress || (() => navigation.goBack())}
                         activeOpacity={0.7}
-                        style={[styles.iconButton, styles.notificationButton]}
                       >
-                        <Ionicons name="notifications-outline" size={22} color="#FFFFFF" />
+                        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                       </TouchableOpacity>
                     )}
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('ProfileScreen')}
-                      activeOpacity={0.7}
-                      style={styles.avatarContainer}
-                    >
-                      <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>RK</Text>
-                      </View>
-                    </TouchableOpacity>
+
+                    <View style={styles.titleContainer}>
+                      <Text style={styles.title}>{resolvedTitle}</Text>
+                      {subtitle && (
+                        <Text style={styles.subtitle}>{subtitle}</Text>
+                      )}
+                    </View>
                   </View>
-                )}
-              </View>
+
+                  {/* Spacer for balance */}
+                  <View style={styles.centerSection} />
+
+                  {/* Right Section */}
+                  <View style={styles.rightSection}>
+                    {rightComponent || (
+                      <View style={styles.rightIconsContainer}>
+                        {showNotificationIcon && (
+                          <TouchableOpacity
+                            onPress={() => navigation.navigate("NotificationScreen")}
+                            activeOpacity={0.7}
+                            style={[styles.iconButton, styles.notificationButton]}
+                          >
+                            <Ionicons
+                              name="notifications-outline"
+                              size={22}
+                              color="#FFFFFF"
+                            />
+                          </TouchableOpacity>
+                        )}
+                        <TouchableOpacity
+                          onPress={() => navigation.navigate("ProfileScreen")}
+                          activeOpacity={0.7}
+                          style={styles.avatarContainer}
+                        >
+                          <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>RK</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                </>
+              )}
+
+              {/* Variant: centered */}
+              {variant === "centered" && (
+                <>
+                  {/* Left - Back */}
+                  {showBackButton && (
+                    <TouchableOpacity
+                      style={styles.iconButton}
+                      onPress={onBackPress || (() => navigation.goBack())}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  )}
+
+                  {/* Center - Title */}
+                  <Text style={styles.centeredTitle}>{resolvedTitle}</Text>
+                  
+
+                  {/* Right - placeholder for symmetry */}
+                  <View style={{ width: 34 }} />
+                </>
+              )}
             </View>
           </SafeAreaView>
         </LinearGradient>
@@ -127,26 +174,39 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   gradient: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: spacing.md, // 16
+    paddingBottom: spacing.sm,     // 8
+    paddingTop: spacing.xs,        // 4
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 76,
-    paddingTop: 30,
+    height: 90,
+    paddingTop: spacing.sm, // 8
   },
+  // Professional
   leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    gap: spacing.xs, // 4
   },
   titleContainer: {
-    marginLeft: 8,
+    marginLeft: spacing.xs, // 4
+  },
+  title: {
+    ...typography.heading3,
+    color: colors.text.primary,
+    letterSpacing: 0.5,
+  },
+  subtitle: {
+    ...typography.caption,
+    color: colors.text.secondary,
+    marginTop: 2,
   },
   centerSection: {
-    width: 40, // spacer
+    width: 40,
   },
   rightSection: {
     alignItems: 'flex-end',
@@ -155,66 +215,63 @@ const styles = StyleSheet.create({
   rightIconsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.sm, // 8
   },
   notificationButton: {
-    marginRight: 20,
+    marginRight: spacing.xs, // 4
   },
   avatarContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 40,
+    height: 40,
+    borderRadius: radius.xl, // 16
+    backgroundColor: colors.surface.primary, // Using primary surface color
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: colors.border.default, // Using default border color
   },
   avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#FFFFFF',
+    width: 36,
+    height: 36,
+    borderRadius: radius.xl, // 16
+    backgroundColor: colors.surface.secondary, // Using secondary surface for contrast
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    color: corpAstroDarkTheme.colors.brand.primary,
-    fontSize: 16,
+    color: colors.text.primary, // Using primary text color
+    ...typography.bodyLarge,
     fontWeight: '700',
     textTransform: 'uppercase',
     textAlign: 'center',
-    lineHeight: 34,
+    lineHeight: 36,
   },
+  // Centered
+  centeredTitle: {
+    ...typography.heading3,
+    color: colors.text.primary,
+    textAlign: 'center',
+    flex: 1,
+    marginLeft: spacing.md,
+  },
+  // Common
   iconButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 40,
+    height: 40,
+    borderRadius: radius.xl, 
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontWeight: '500',
-    marginTop: 2,
-  },
 });
 
-// Wrapper for navigation
-const CorporateProfessionalHeaderWrapper = (
-  props: Omit<CorporateProfessionalHeaderProps, 'navigation'>
+// Wrapper
+const CorporateHeaderWrapper = (
+  props: Omit<CorporateHeaderProps, "navigation">
 ) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  return <CorporateProfessionalHeader {...props} navigation={navigation} />;
+  return <CorporateHeader {...props} navigation={navigation} />;
 };
 
-export default CorporateProfessionalHeaderWrapper;
+export default CorporateHeaderWrapper;

@@ -26,11 +26,11 @@ type HelpSupportScreenNavigationProp = NativeStackNavigationProp<RootStackParamL
 import { corpAstroDarkTheme } from '../../components/DesignSystem/DarkTheme';
 import { designTokens, typography } from '../../components/DesignSystem/designTokens';
 import HelpComponents from '../../components/menusection/HelpComponents';
-import CorporateProfessionalHeader from '../../components/professional/CorporateProfessionalHeader';
 const { ContactCard, HelpButton, HelpSection } = HelpComponents;
 
 // Components
 import { BaseScreen } from '../../components/menusection/BaseScreen';
+import CorporateHeader from '../../components/professional/CorporateProfessionalHeader';
 
 /**
  * Help & Support Screen Component
@@ -62,12 +62,7 @@ const HelpSupportScreen = () => {
   return (
     <BaseScreen>
       <SafeAreaView style={styles.container}>
-        <CorporateProfessionalHeader
-          title="Help & Support"
-          subtitle="Get help and app resources"
-          showBackButton={true}
-          onBackPress={handleBack}
-        />
+        <CorporateHeader variant="centered" title="Contact Us" showBackButton />
         
         <ScrollView style={styles.scrollView}>
           <HelpSection title="Quick Help">

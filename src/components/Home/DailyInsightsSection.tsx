@@ -36,7 +36,7 @@ export const DailyInsightsSection: React.FC<DailyInsightsSectionProps> = ({
   const theme = corpAstroDarkTheme;
 
   return (
-    <View style={[styles.insightsCard, { backgroundColor: theme.colors.cosmos.deep }]}>
+    <View style={[styles.insightsCard, { backgroundColor: theme.colors.brand.accent }]}>
       <View style={styles.insightsHeader}>
         <Text style={[styles.insightsTitle, { color: theme.colors.brand.primary }]}>
           ⭐ TODAY'S KEY INSIGHTS
@@ -77,11 +77,11 @@ export const DailyInsightsSection: React.FC<DailyInsightsSectionProps> = ({
           >
             <View style={[styles.insightIndicator, { backgroundColor: insight.color }]} />
             <View style={styles.insightContent}>
-              <Text style={[styles.insightText, { color: theme.colors.neutral.text }]}>
+              <Text style={[styles.insightText, { color: theme.colors.cosmos.deep}]}>
                 {insight.icon} {insight.title}
               </Text>
               {insightsExpanded === index && (
-                <Text style={[styles.insightDetails, { color: theme.colors.neutral.light }]}>
+                <Text style={[styles.insightDetails, { color: theme.colors.cosmos.deep }]}>
                   {insight.details}
                 </Text>
               )}
@@ -89,7 +89,7 @@ export const DailyInsightsSection: React.FC<DailyInsightsSectionProps> = ({
             <Text style={[
               styles.expandIcon, 
               { 
-                color: theme.colors.neutral.light,
+                color: theme.colors.cosmos.deep,
                 transform: [{ rotate: insightsExpanded === index ? '90deg' : '0deg' }]
               }
             ]}>▶</Text>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: corpAstroDarkTheme.colors.cosmos.deep,
   },
   insightIndicator: {
     width: 4,

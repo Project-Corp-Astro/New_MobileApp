@@ -19,10 +19,10 @@ type RootStackParamList = {
   Reports: undefined;
 };
 
-import CorporateProfessionalHeader from '../../components/professional/CorporateProfessionalHeader';
 import { corpAstroDarkTheme } from '../../components/DesignSystem/DarkTheme';
 import { spacing } from '../../components/DesignSystem/SpacingScale';
 import { typography } from '../../components/DesignSystem/designTokens';
+import CorporateHeader from '../../components/professional/CorporateProfessionalHeader';
 
 interface Report {
   id: string;
@@ -182,23 +182,8 @@ const ReportsScreen: React.FC = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: String(theme.colors.cosmos.void) }}>
-      <CorporateProfessionalHeader
-        title="My Reports"
-        showBackButton
-        onBackPress={() => navigation.goBack()}
-        rightComponent={
-          <Pressable
-            style={{
-              padding: 8,
-              borderRadius: 8,
-              backgroundColor: 'rgba(46, 134, 222, 0.2)',
-            }}
-            onPress={handleGenerateReport}
-          >
-            <Text style={{ ...typography.body }}>📊</Text>
-          </Pressable>
-        }
-      />
+               <CorporateHeader variant="centered" title="My Reports" showBackButton />
+
 
       <ScrollView
         showsVerticalScrollIndicator={false}

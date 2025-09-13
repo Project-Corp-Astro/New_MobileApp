@@ -98,33 +98,37 @@ const ProfessionalTimingsCard: React.FC<ProfessionalTimingsCardProps> = ({
   }, [index, timing.type]);
 
   const getCardColors = () => {
+    const { colors } = theme;
     switch (timing.type) {
       case 'auspicious':
         return {
-          borderColor: '#22C55E',
-          gradientStart: 'rgba(34, 197, 94, 0.18)',
-          gradientEnd: 'rgba(34, 197, 94, 0.08)',
-          accentColor: '#16A34A',
-          glowColor: 'rgba(34, 197, 94, 0.25)',
-          shadowColor: 'rgba(34, 197, 94, 0.4)',
+          // Using brand colors for auspicious items
+          borderColor: String(colors.brand.primary),
+          gradientStart: `${String(colors.brand.primary)}2E`,
+          gradientEnd: `${String(colors.brand.primary)}14`,
+          accentColor: String(colors.brand.light),
+          glowColor: `${String(colors.brand.glow)}40`,
+          shadowColor: `${String(colors.brand.primary)}66`,
         };
       case 'avoid':
         return {
-          borderColor: '#EF4444',
-          gradientStart: 'rgba(239, 68, 68, 0.18)',
-          gradientEnd: 'rgba(239, 68, 68, 0.08)',
-          accentColor: '#DC2626',
-          glowColor: 'rgba(239, 68, 68, 0.25)',
-          shadowColor: 'rgba(239, 68, 68, 0.4)',
+          // Using mystical colors for avoid items
+          borderColor: String(colors.mystical.deep),
+          gradientStart: `${String(colors.mystical.royal)}2E`,
+          gradientEnd: `${String(colors.mystical.deep)}14`,
+          accentColor: String(colors.mystical.light),
+          glowColor: `${String(colors.mystical.glow)}40`,
+          shadowColor: `${String(colors.mystical.royal)}66`,
         };
       default:
         return {
-          borderColor: '#F59E0B',
-          gradientStart: 'rgba(245, 158, 11, 0.18)',
-          gradientEnd: 'rgba(245, 158, 11, 0.08)',
-          accentColor: '#D97706',
-          glowColor: 'rgba(245, 158, 11, 0.25)',
-          shadowColor: 'rgba(245, 158, 11, 0.4)',
+          // Using cosmos colors for neutral items
+          borderColor: String(colors.cosmos.medium),
+          gradientStart: `${String(colors.cosmos.dark)}2E`,
+          gradientEnd: `${String(colors.cosmos.void)}14`,
+          accentColor: String(colors.neutral.light),
+          glowColor: `${String(colors.neutral.medium)}20`,
+          shadowColor: `${String(colors.cosmos.medium)}33`,
         };
     }
   };
@@ -194,8 +198,11 @@ const ProfessionalTimingsCard: React.FC<ProfessionalTimingsCardProps> = ({
             style={[
               styles.glowEffect,
               {
-                backgroundColor: colors.glowColor,
-                opacity: glowAnim,
+                backgroundColor: theme.colors.cosmos.deep,
+                opacity: glowAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 0.25],
+                }),
               },
             ]}
           />

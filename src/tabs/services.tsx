@@ -49,8 +49,8 @@ import { corpAstroDarkTheme } from '../components/DesignSystem/DarkTheme';
 import { designTokens, typography, spacing, colors, borderOpacity, radius, shadows, cards, badges, animations, pagination } from '../components/DesignSystem/designTokens';
 
 // Import premium components
-import CorporateProfessionalHeader from '../components/professional/CorporateProfessionalHeader';
 import { HamburgerMenu, useHamburgerMenu } from '../components/Home/HamburgerMenu';
+import CorporateHeader from '../components/professional/CorporateProfessionalHeader';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -933,11 +933,8 @@ export default function ServicesScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.cosmos.void }]}>
-      <CorporateProfessionalHeader
-        title="Services"
-        subtitle="Premium Vedic Intelligence"
-        onMenuPress={hamburgerMenu.openMenu}
-      />
+     <CorporateHeader variant="centered" title="Services" />
+
       {renderMysticalTabs()}
       
       <ScrollView

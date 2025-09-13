@@ -2,100 +2,100 @@
  * Corp Astro - Settings Tab
  * 
  * Tab view for settings, designed to work within the main tab navigation.
- * For full settings screen with header, see @/screens/Menu/SettingsScreen
+ * Follows the design system tokens for consistent styling.
  */
 
 import React from 'react';
+import { corpAstroDarkTheme } from '../components/DesignSystem/DarkTheme';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { corpAstroDarkTheme } from '../components/DesignSystem/DarkTheme';
-import { spacing } from '../components/DesignSystem/SpacingScale';
-import CorporateProfessionalHeader from '../components/professional/CorporateProfessionalHeader'; 
-import { typography } from '../components/DesignSystem/designTokens';
+import { spacing, typography, colors, radius } from '../components/DesignSystem/designTokens';
+import CorporateHeader from '../components/professional/CorporateProfessionalHeader';
 
 const SettingsTab = () => {
   const theme = corpAstroDarkTheme;
   const navigation = useNavigation();
 
   const settingsItems = [
-    { label: 'My Business', icon: { family: 'MaterialIcons', name: 'business' } },
+    { label: 'My Business', icon: { family: 'MaterialIcons', name: 'business' ,navigate:'BusinessScreen' } },
     { label: 'Manage Subscriptions', icon: { family: 'MaterialIcons', name: 'receipt',navigate:'SubscriptionScreen' } },
-    { label: 'Notifications', icon: { family: 'Ionicons', name: 'notifications-outline',navigate:'NotificationScreen' } },
-    { label: 'Unlock All Features', icon: { family: 'MaterialIcons', name: 'lock' } },
+    { label:  'Calendar',icon:{family:'MaterialIcons',name:'calendar-today',navigate:'CalendarScreen'}},
+    { label: 'App Settings', icon: { family: 'Ionicons', name: 'settings-outline',navigate:'SettingsScreen' } },
+    { label: 'Rate App', icon: { family: 'MaterialIcons', name: 'star-outline',navigate:'RateAppScreen' } },
     { label: 'Reports', icon: { family: 'MaterialIcons', name: 'history',navigate:'ReportsScreen' } },
-    { label: 'Contact Us', icon: { family: 'MaterialIcons', name: 'headset' } },
-    { label: 'Follow Us', icon: { family: 'Ionicons', name: 'heart-outline'  } },
+    { label: 'Refer Us', icon: { family: 'Ionicons', name: 'heart-outline',navigate:'ReferUsScreen' } },
+    { label: 'Contact Us', icon: { family: 'MaterialIcons', name: 'headset',navigate:'HelpSupportScreen' } },
+    { label : 'all colors', icon: { family: '', name: 'all colors',navigate:'AllColorsScreen'}}
   ];
 
   return (
-    <ScrollView 
-      style={[styles.container, { backgroundColor: String(theme.colors.cosmos.void) }]}
-    >
-      <CorporateProfessionalHeader
-              title="Settings"
-              subtitle="Customize Your Experience"
-              showBackButton={true}
-            />
-      {/* Settings List */}
-      <View style={styles.settingsSection}>
-        <Text style={[styles.sectionTitle, { color: String(theme.colors.neutral.text) }]}>
-          General Settings
-        </Text>
+    <View style={styles.container}>
+      <CorporateHeader variant="centered" title="Settings" />
+      
+      <ScrollView style={styles.scrollView}>
+        {/* Settings List */}
+        <View style={styles.settingsSection}>
+          <Text style={styles.sectionTitle}>
+            General Settings
+          </Text>
 
-        {settingsItems.map((item) => (
-          <Pressable 
-            key={item.label} 
-            style={[styles.settingItem, { borderColor: 'rgba(255,255,255,0.04)' }]} 
-            onPress={() => {
-              if (item.icon.navigate) {
-                navigation.navigate(item.icon.navigate as never);
-              } else {
-                console.log(item.label);
-              }
-            }}
-          >
-            <View style={styles.settingRow}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                <View style={styles.iconWrap}>
-                  {item.icon.family === 'MaterialIcons' ? (
-                    <MaterialIcons 
-                      name={item.icon.name as any} 
-                      size={20} 
-                      color={String(theme.colors.neutral.light)} 
-                    />
-                  ) : (
-                    <Ionicons 
-                      name={item.icon.name as any} 
-                      size={20} 
-                      color={String(theme.colors.neutral.light)} 
-                    />
-                  )}
+          <View style={styles.settingsList}>
+            {settingsItems.map((item) => (
+              <Pressable 
+                key={item.label} 
+                style={({ pressed }) => [
+                  styles.settingItem,
+                  pressed && styles.pressedItem
+                ]}
+                onPress={() => {
+                  if (item.icon.navigate) {
+                    navigation.navigate(item.icon.navigate as never);
+                  }
+                }}
+              >
+                <View style={styles.settingContent}>
+                  <View style={styles.settingIcon}>
+                    {item.icon.family === 'MaterialIcons' ? (
+                      <MaterialIcons 
+                        name={item.icon.name as any} 
+                        size={24}
+                        color={colors.text.primary}
+                      />
+                    ) : (
+                      <Ionicons 
+                        name={item.icon.name as any} 
+                        size={24}
+                        color={colors.text.primary}
+                      />
+                    )}
+                  </View>
+                  <Text style={styles.settingLabel}>
+                    {item.label}
+                  </Text>
+                  <Ionicons 
+                    name="chevron-forward" 
+                    size={20} 
+                    color={colors.text.secondary}
+                    style={styles.chevron}
+                  />
                 </View>
-                <Text style={[styles.settingLabel, { color: String(theme.colors.neutral.text) }]}>
-                  {item.label}
-                </Text>
-              </View>
-              <Ionicons 
-                name="chevron-forward" 
-                size={20} 
-                color={String(theme.colors.neutral.light)} 
-              />
-            </View>
-          </Pressable>
-        ))}
-      </View>
+              </Pressable>
+            ))}
+          </View>
+        </View>
 
-      {/* App Info */}
-      <View style={styles.appInfo}>
-        <Text style={[styles.appVersion, { color: String(theme.colors.neutral.light) }]}>
-          Corp Astro v1.0.0
-        </Text>
-        <Text style={[styles.appDesc, { color: String(theme.colors.neutral.light) }]}>
-          Professional Astrology Application
-        </Text>
-      </View>
-    </ScrollView>
+        {/* App Info */}
+        <View style={styles.appInfo}>
+          <Text style={styles.appVersion}>
+            Corp Astro v1.0.0
+          </Text>
+          <Text style={styles.appDesc}>
+            Professional Astrology Application
+          </Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -104,59 +104,71 @@ export default SettingsTab;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"black"
   },
-  inner: {
+  scrollView: {
     flex: 1,
-    padding: spacing.lg,
   },
   settingsSection: {
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.md,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: spacing.md,
-  },
-  settingItem: {
-    padding: spacing.md,
-    borderRadius: 12,
-    borderWidth: 1,
+    ...typography.caption,
+    color: colors.text.secondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     marginBottom: spacing.sm,
   },
-  settingLabel: {
-    fontSize: 16,
-    fontWeight: '500',
+  settingsList: {
+    backgroundColor: colors.surface.primary,
+    borderRadius: radius.md,
+    overflow: 'hidden',
   },
-  settingRow: {
+  settingItem: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border.default,
+  },
+  pressedItem: {
+    backgroundColor: colors.surface.secondary,
+  },
+  settingContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
-  iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+  settingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    marginRight: spacing.sm,
+    marginRight: spacing.md,
+  },
+  settingLabel: {
+    ...typography.bodyLarge,
+    color: colors.text.primary,
+    flex: 1,
+  },
+  chevron: {
+    marginLeft: spacing.xs,
   },
   appInfo: {
-    marginTop: spacing.lg,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.04)',
+    marginTop: spacing.xxl,
+    marginBottom: spacing.xxl,
     alignItems: 'center',
+    paddingHorizontal: spacing.md,
   },
   appVersion: {
-    fontSize: 12,
-    opacity: 0.7,
-    textAlign: 'center',
+    ...typography.body,
+    color: colors.text.secondary,
+    marginBottom: spacing.xs,
   },
   appDesc: {
-    fontSize: 12,
+    ...typography.caption,
+    color: colors.text.secondary,
     opacity: 0.7,
-    textAlign: 'center',
-    marginTop: spacing.xs,
   },
 });

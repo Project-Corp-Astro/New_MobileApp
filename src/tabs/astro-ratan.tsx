@@ -32,6 +32,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import CorporateHeader from '../components/professional/CorporateProfessionalHeader';
 
 type RootStackParamList = {
   // Define your screen params here if needed
@@ -50,6 +51,7 @@ import { corpAstroDarkTheme } from '../components/DesignSystem/DarkTheme';
 
 // Import premium components
 import { HamburgerMenu, useHamburgerMenu } from '../components/Home/HamburgerMenu';
+import CorporateProfessionalHeaderWrapper from '../components/professional/CorporateProfessionalHeader';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -187,8 +189,8 @@ export default function AstroRatanScreen() {
   
   // Hamburger menu hook
   const hamburgerMenu = useHamburgerMenu({
-    onNavigate: (route: keyof RootStackParamList) => {
-      navigation.navigate(route);
+    onNavigate: (route: string) => {
+      navigation.navigate(route as keyof RootStackParamList);
     },
   });
   
@@ -346,9 +348,11 @@ export default function AstroRatanScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Animated Star Field Background */}
-      <StarField />
+    <View style={{ flex: 1 }}>
+      <CorporateHeader variant="centered" title="ASTRO RATAN" />
+      <SafeAreaView style={styles.container}>
+        {/* Animated Star Field Background */}
+        <StarField />
       
       {/* Cosmic Background Gradient */}
       <LinearGradient
@@ -361,64 +365,7 @@ export default function AstroRatanScreen() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       />
-
-      {/* Header */}
-      <Animated.View 
-        style={[
-          styles.header,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
-      >
-        <LinearGradient
-          colors={[
-            'rgba(138, 43, 226, 0.2)',
-            'rgba(75, 0, 130, 0.2)',
-            'rgba(25, 25, 112, 0.15)',
-          ]}
-          style={styles.headerGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        />
-        
-        <View style={styles.headerContent}>
-          {/* Hamburger Menu Button */}
-          <TouchableOpacity 
-            style={styles.hamburgerButton}
-            onPress={hamburgerMenu.openMenu}
-            accessibilityLabel="Open navigation menu"
-            accessibilityRole="button"
-          >
-            <Ionicons name="menu" size={24} color={designTokens.colors.text.primary} />
-          </TouchableOpacity>
-          
-          <View style={styles.headerCenter}>
-            <View style={styles.headerAvatarContainer}>
-              <LinearGradient
-                colors={[corpAstroDarkTheme.colors.mystical.royal, corpAstroDarkTheme.colors.luxury.pure]}
-                style={styles.headerAvatar}
-              >
-                <MaterialIcons name="auto-awesome" size={24} color={corpAstroDarkTheme.colors.cosmos.dark} />
-              </LinearGradient>
-              <View style={styles.headerOnlineIndicator} />
-            </View>
-            
-            <View style={styles.headerInfo}>
-              <Text style={styles.headerTitle}>Astro Ratan</Text>
-              <View style={styles.headerStatus}>
-                <View style={styles.statusDot} />
-                <Text style={styles.headerSubtitle}>Online • Cosmic Guide</Text>
-              </View>
-            </View>
-          </View>
-          
-          <TouchableOpacity style={styles.headerAction}>
-            <Ionicons name="ellipsis-vertical" size={20} color={designTokens.colors.text.secondary} />
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+    
 
       {/* Chat Messages */}
       <KeyboardAvoidingView
@@ -565,7 +512,8 @@ export default function AstroRatanScreen() {
         onSettingsPress={hamburgerMenu.handleSettingsPress}
         onHelpPress={hamburgerMenu.handleHelpPress}
       />
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
