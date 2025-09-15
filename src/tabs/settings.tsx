@@ -26,7 +26,6 @@ const SettingsTab = () => {
     { label: 'Reports', icon: { family: 'MaterialIcons', name: 'history',navigate:'ReportsScreen' } },
     { label: 'Refer Us', icon: { family: 'Ionicons', name: 'heart-outline',navigate:'ReferUsScreen' } },
     { label: 'Contact Us', icon: { family: 'MaterialIcons', name: 'headset',navigate:'HelpSupportScreen' } },
-    { label : 'all colors', icon: { family: '', name: 'all colors',navigate:'AllColorsScreen'}}
   ];
 
   return (
