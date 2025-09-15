@@ -160,22 +160,19 @@ const HomeTab: React.FC = () => {
         insight: 'Mars in 10th house brings leadership opportunities. Schedule important meetings between 2-4 PM for maximum impact.',
         guidance: 'Focus on strategic decisions and team leadership',
         energy: 'High',
-        bestTime: '2:00 PM - 4:00 PM',
-        background: corpAstroDarkTheme.colors.brand.primary,
+        bestTime: '2:00 PM - 4:00 PM'
       },
       thisWeek: {
         insight: 'Professional recognition and advancement opportunities emerge. Mid-week negotiations favor your position.',
         guidance: 'Network actively and showcase your expertise',
         energy: 'Rising',
-        bestTime: 'Wednesday - Friday',
-        background: corpAstroDarkTheme.colors.luxury.bronze,
+        bestTime: 'Wednesday - Friday'
       },
       thisMonth: {
         insight: 'Career transformation phase begins. New projects and responsibilities align with your long-term goals.',
         guidance: 'Plan strategic moves and build key relationships',
         energy: 'Transformative',
-        bestTime: 'After 15th',
-        background: corpAstroDarkTheme.colors.mystical.royal,
+        bestTime: 'After 15th'
       },
       color: theme.colors.brand.primary,
       gradient: ['#4A90E2', '#357ABD'],
@@ -187,22 +184,19 @@ const HomeTab: React.FC = () => {
         insight: 'Jupiter in 2nd house enhances financial gains. Ideal time for investments and major financial decisions.',
         guidance: 'Review investment portfolio and consider new opportunities',
         energy: 'Abundant',
-        bestTime: '10:00 AM - 12:00 PM',
-        background: corpAstroDarkTheme.colors.mystical.glow,
+        bestTime: '10:00 AM - 12:00 PM'
       },
       thisWeek: {
         insight: 'Financial stability strengthens. Unexpected gains possible through professional connections.',
         guidance: 'Focus on long-term wealth building strategies',
         energy: 'Stable',
-        bestTime: 'Early week',  
-        background: corpAstroDarkTheme.colors.mystical.light,
+        bestTime: 'Early week'
       },
       thisMonth: {
         insight: 'Major financial opportunities arise. Property investments and business ventures show strong potential.',
         guidance: 'Plan major financial moves with expert consultation',
         energy: 'Expansive',
-        bestTime: 'Last week',
-        background: corpAstroDarkTheme.colors.luxury.champagne,
+        bestTime: 'Last week'
       },
       color: '#2E7D32',
       gradient: ['#4CAF50', '#2E7D32'],
@@ -214,23 +208,19 @@ const HomeTab: React.FC = () => {
         insight: 'Sun-Mercury conjunction boosts mental clarity and vitality. Perfect day for important health decisions.',
         guidance: 'Focus on mental wellness and energy optimization',
         energy: 'Vibrant',
-        bestTime: '6:00 AM - 8:00 AM',
-        background: corpAstroDarkTheme.colors.brand.light,
-
+        bestTime: '6:00 AM - 8:00 AM'
       },
       thisWeek: {
         insight: 'Overall vitality improves significantly. Good time for starting new health routines and wellness practices.',
         guidance: 'Establish sustainable health habits',
         energy: 'Improving',
-        bestTime: 'Morning hours',
-        background: corpAstroDarkTheme.colors.mystical.royal,
+        bestTime: 'Morning hours'
       },
       thisMonth: {
         insight: 'Complete health transformation possible. Mind-body alignment reaches optimal levels.',
         guidance: 'Commit to holistic wellness approach',
         energy: 'Regenerative',
-        bestTime: 'Full moon period',
-        background: corpAstroDarkTheme.colors.brand.glow,
+        bestTime: 'Full moon period'
       },
       color: '#F57C00',
       gradient: ['#FF9800', '#F57C00'],
@@ -242,23 +232,19 @@ const HomeTab: React.FC = () => {
         insight: 'Venus in 11th house favors partnerships and networking. Strong potential for collaborative opportunities.',
         guidance: 'Focus on relationship building and team synergy',
         energy: 'Collaborative',
-        bestTime: '3:00 PM - 6:00 PM',
-        background: corpAstroDarkTheme.colors.mystical.deep,
-
+        bestTime: '3:00 PM - 6:00 PM'
       },
       thisWeek: {
         insight: 'Business expansion opportunities multiply. Client relationships deepen and new partnerships emerge.',
         guidance: 'Prioritize client satisfaction and team development',
         energy: 'Growing',
-        bestTime: 'Mid-week',
-        background: corpAstroDarkTheme.colors.mystical.deep,
+        bestTime: 'Mid-week'
       },
       thisMonth: {
         insight: 'Significant business breakthroughs ahead. Innovation and strategic partnerships drive growth.',
         guidance: 'Implement long-term strategic initiatives',
         energy: 'Breakthrough',
-        bestTime: 'New moon period',
-        background: corpAstroDarkTheme.colors.mystical.deep,
+        bestTime: 'New moon period'
       },
       color: '#7B1FA2',
       gradient: ['#9C27B0', '#7B1FA2'],
@@ -311,7 +297,7 @@ const HomeTab: React.FC = () => {
             panchang: {
               nakshatra: 'Abhijit (28th Nakshatra)',
               nature: 'Sarvabhadra',
-              deity: 'Vishnu',
+              deity: 'Vishnu'
             }
           },
           { 
@@ -323,7 +309,7 @@ const HomeTab: React.FC = () => {
             category: 'business',
             panchang: {
               nature: 'Malefic planetary period',
-              impact: 'Obstacles and delays',
+              impact: 'Obstacles and delays'
             }
           },
           { 
@@ -1181,9 +1167,9 @@ const HomeTab: React.FC = () => {
 
   const renderHoroscopeSection = () => {
     const timePeriods = [
-      { key: 'today' as const, label: 'Today', description: 'Live insights' },
-      { key: 'thisWeek' as const, label: 'Week', description: 'Trends ahead' },
-      { key: 'thisMonth' as const, label: 'Month', description: 'Big picture' }
+      { key: 'today' as const, label: '☀️ Today', description: 'Live insights' },
+      { key: 'thisWeek' as const, label: '📅 Week', description: 'Trends ahead' },
+      { key: 'thisMonth' as const, label: '🌙 Month', description: 'Big picture' }
     ];
 
     const getCurrentData = (category: any) => {
@@ -1191,7 +1177,7 @@ const HomeTab: React.FC = () => {
         case 'today': return category.today;
         case 'thisWeek': return category.thisWeek;
         case 'thisMonth': return category.thisMonth;
-        default: return category.thisWeek;
+        default: return category.today;
       }
     };
 
@@ -1207,16 +1193,26 @@ const HomeTab: React.FC = () => {
           </Text>
         </View>
 
-        {/* Modern Time Period Selector */}
-        <View style={[styles.timePeriodSelector, { backgroundColor: 'rgba(255, 255, 255, 0.05)' }]}>
-          {timePeriods.map((period, index) => (
+        {/* Refined Time Period Selector */}
+        <View style={styles.timePeriodSelector}>
+          {timePeriods.map((period) => (
             <Pressable
               key={period.key}
+              style={[
+                styles.timePeriodButton,
+                {
+                  backgroundColor: activeTimePeriod === period.key 
+                    ? theme.colors.brand.primary 
+                    : 'rgba(255, 255, 255, 0.08)',
+                  borderColor: activeTimePeriod === period.key 
+                    ? theme.colors.brand.primary 
+                    : 'rgba(255, 255, 255, 0.15)',
+                }
+              ]}
               onPress={() => {
-                triggerLightHaptic();
+                triggerLightHaptic(); // Haptic feedback for time period selection
                 setActiveTimePeriod(period.key);
               }}
-              style={styles.timePeriodButton}
               accessibilityLabel={`${period.label} horoscope`}
               accessibilityHint={`Double tap to view ${period.description.toLowerCase()}`}
               accessibilityRole="button"
@@ -1226,17 +1222,22 @@ const HomeTab: React.FC = () => {
                 styles.timePeriodButtonText,
                 { 
                   color: activeTimePeriod === period.key 
-                    ? theme.colors.neutral.text 
-                    : theme.colors.neutral.light,
-                  fontWeight: activeTimePeriod === period.key ? '700' : '500',
-                  opacity: activeTimePeriod === period.key ? 1 : 0.7
+                    ? theme.colors.cosmos.void 
+                    : theme.colors.neutral.text 
                 }
               ]}>
-                {period.label.split(' ')[0]}
+                {period.label}
               </Text>
-              {activeTimePeriod === period.key && (
-                <View style={[styles.activeIndicator, { backgroundColor: theme.colors.brand.primary }]} />
-              )}
+              <Text style={[
+                styles.timePeriodSubtext,
+                { 
+                  color: activeTimePeriod === period.key 
+                    ? 'rgba(0, 0, 0, 0.6)' 
+                    : theme.colors.neutral.light 
+                }
+              ]}>
+                {period.description}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -1261,10 +1262,9 @@ const HomeTab: React.FC = () => {
               <View key={category.title} style={[
                 styles.horoscopeCard,
                 { 
-                  backgroundColor: (currentData as any).background,
+                  backgroundColor: theme.colors.cosmos.deep,
                   borderColor: createAlphaColor(String(category.color), 0.2),
                   shadowColor: String(category.color),
-                  overflow: 'hidden',
                 }
               ]}>
                 {/* Compact Card Header */}
@@ -1276,12 +1276,7 @@ const HomeTab: React.FC = () => {
                     <Text style={styles.horoscopeIcon}>{category.icon}</Text>
                   </View>
                   <View style={styles.horoscopeCardHeaderText}>
-                    <Text style={[styles.horoscopeCardTitle, { 
-                      color: (currentData as any)?.background ? theme.colors.neutral.light : category.color,
-                      textShadowColor: 'rgba(0,0,0,0.3)',
-                      textShadowOffset: { width: 0.5, height: 0.5 },
-                      textShadowRadius: 1
-                    }]}>
+                    <Text style={[styles.horoscopeCardTitle, { color: category.color }]}>
                       {category.title}
                     </Text>
                     <View style={styles.energyBadge}>
@@ -1294,7 +1289,7 @@ const HomeTab: React.FC = () => {
                 </View>
 
                 {/* Optimized Card Content */}
-                <Text style={[styles.horoscopeInsight, { color: theme.colors.neutral.light }]}>
+                <Text style={[styles.horoscopeInsight, { color: theme.colors.neutral.text }]}>
                   {currentData.insight}
                 </Text>
 
@@ -3148,33 +3143,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.3,
     textTransform: 'uppercase',
-  },
-  
-  // Time Period Selector
-  timePeriodSelector: {
-    flexDirection: 'row',
-    borderRadius: 18,
-    padding: 4,
-    marginBottom: spacing.lg,
-  },
-  timePeriodButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  timePeriodButtonText: {
-    ...typography.body,
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    height: 2,
-    width: '70%',
-    borderRadius: 1,
   },
   
   // Compact CTA
